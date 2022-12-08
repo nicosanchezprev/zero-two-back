@@ -85,8 +85,37 @@ exports.getAllGenres = async (limitOfGenres = 62) => {
   }
 }
 
-exports.getAllReviews = async () => {
-  return ['Reviews'];
+exports.getAllReviews = async (animeId) => {
+  try {
+    animeId = Number(animeId);
+    if(typeof animeId === 'number') {
+    
+        let reviews = [];
+        let offset = 0;
+        let apiData = await axios.get(`https://kitsu.io/api/edge/anime/${animeId}/reviews?page%5Blimit%5D=20&page%5Boffset%5D=${offset}`, {headers: {
+            "accept-encoding": "*",
+          }});
+        
+        apiData.data.data.map(async apiReview => {
+           
+            let review = {};
+            review.id = apiReview.id;
+            review.content = apiReview.attributes.content;
+            review.rating = apiReview.attributes.rating;
+            review.spoiler = apiReview.attributes.spoiler;
+            review.likesCount = apiReview.attributes.likesCount;
+            review.user = apiReview.relationships.user.links.related
+            reviews.push(review)
+        })
+        return reviews;
+    }
+    else {
+        throw new Error('Invalid anime id. Id must be a number.');
+    }
+
+  } catch (err) {
+    throw new Error(err.message);
+  }
 }
 
 exports.getAllEpisodes = async () => {

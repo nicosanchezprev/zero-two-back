@@ -1,10 +1,11 @@
 const utils = require('../utils/utils');
 
-exports.fillReviewModel = async () => {
+exports.fillReviewModel = async (id) => {
+  
     try {
-        const reviews = await utils.getAllReviews();
+        const reviews = await utils.getAllReviews(id);
         return reviews;
       } catch (error) {
-        return "ESTO ES INFO" + error.message;
+        throw new Error(error.message);
       }
 }
