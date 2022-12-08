@@ -1,9 +1,9 @@
 const utils = require('../utils/utils');
 
-exports.fillEpisodeModel = async () => {
+exports.fillEpisodesAnime = async (id) => {
     try {
-        const reviews = await utils.getAllEpisodes();
-        return reviews;
+        const episodes = await utils.getAllEpisodes(id);
+        return episodes;
       } catch (error) {
         return "ESTO ES INFO" + error.message;
       }
