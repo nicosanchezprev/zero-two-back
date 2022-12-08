@@ -1,20 +1,17 @@
-
+// UNNUSED 
 const { DataTypes } = require('sequelize');
 
 module.exports = (sequelize) => {
   // defino el modelo
-  sequelize.define('genres', {
+  sequelize.define('genre', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       
   },
-  name: {
-      type: DataTypes.TEXT     
-  },
-  id_anime:{
-    type: DataTypes.INTEGER,
-  },
+    name: {
+        type: DataTypes.TEXT     
+    }
   },
   {
     timestamps: false

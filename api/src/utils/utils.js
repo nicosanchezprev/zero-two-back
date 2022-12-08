@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fetch = require('node-fetch');
 
+
 // var options = {
 //   "method": 'GET',
 //   "Accept": "application/vnd.api+json",
@@ -10,16 +11,23 @@ const fetch = require('node-fetch');
 exports.getAllAnime = async () => {  
   try {
     const numberOfRequests = 10;
-    let offset = 0;
-    let allAnimes = [];
     
+    let allAnimes = [];
+    let offset = 0;
     for(let i = 0; i < numberOfRequests; i++) {
+      
+      // const info = await fetch(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}`).then(response => response.json()).then(data => data.data);
+      const info = await axios.get(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}`,{headers: {
+    "accept-encoding": "*",
+  }});
 
-      const info = await fetch(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=$${offset}`).then(response => response.json()).then(data => data.data);
-      const animesPerRequest = [];
 
-      info.map((animeApi) => {
+      info.data.data.map(async (animeApi) => {
+        const genresApi = await axios.get(animeApi.relationships.genres.links.related, {headers: {
+          "accept-encoding": "*",
+        }});
         let anime = {}
+        anime.id = animeApi.id;
         anime.name = animeApi.attributes.titles.en ? animeApi.attributes.titles.en : animeApi.attributes.titles.en_jp;
         anime.userCount = animeApi.attributes.userCount;
         anime.synopsis = animeApi.attributes.synopsis;
@@ -35,15 +43,20 @@ exports.getAllAnime = async () => {
         anime.episodeCount = animeApi.attributes.episodeCount;
         anime.episodeLength = animeApi.attributes.episodeLength;
         anime.youtubeVideoId = animeApi.attributes.youtubeVideoId;
+        anime.nsfw = animeApi.attributes.nsfw;
+        anime.subtype = animeApi.attributes.subtype;
         anime.showType = animeApi.attributes.showType;
         anime.ageRatingGuide = animeApi.attributes.ageRatingGuide;
-
-        animesPerRequest.push(anime);
+        anime.genres = genresApi.data.data.map(genre => genre.id);
+        
+      
+        allAnimes.push(anime);
+        
       });
-      allAnimes = [...allAnimes, ...animesPerRequest];
-      offset += 20;
+      
+      offset+= 20;
     }
-
+    
     return allAnimes;
 
   } catch (error) {
@@ -55,11 +68,14 @@ exports.getAllGenres = async (limitOfGenres = 62) => {
   try {
     let genres = [];
   
-    let apiData = await fetch(`https://kitsu.io/api/edge/genres?page[limit]=${limitOfGenres}&page[offset]=0`)
-    .then(res => res.json())
-    .then(resJSON => resJSON.data);
+    // let apiData = await fetch(`https://kitsu.io/api/edge/genres?page[limit]=${limitOfGenres}&page[offset]=0`)
+    // .then(res => res.json())
+    // .then(resJSON => resJSON.data);
+    let apiData = await axios.get(`https://kitsu.io/api/edge/genres?page[limit]=${limitOfGenres}&page[offset]=0`, {headers: {
+      "accept-encoding": "*",
+    }})
   
-    genres = apiData.map(genre => {
+    genres = apiData.data.data.map(genre => {
         return {id: genre.id, name: genre.attributes.name}
     })
   

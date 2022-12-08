@@ -4,7 +4,7 @@ const animeControllers = require('../controllers/animeController');
 
 const animeRouter = Router();
 
-animeRouter.get('/', animeControllers.create_anime);
+animeRouter.get('/', animeControllers.get_Animes);
 
 // animeRouter.post();
 
