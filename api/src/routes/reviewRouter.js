@@ -4,7 +4,7 @@ const reviewController = require('../controllers/reviewController');
 
 const reviewRouter = Router();
 
-reviewRouter.get('/', reviewController.getReviews());
+reviewRouter.get('/', reviewController.getReviews);
 
 // animeRouter.post();
 
