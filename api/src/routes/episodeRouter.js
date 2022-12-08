@@ -4,7 +4,7 @@ const episodeController = require('../controllers/episodeController');
 
 const episodeRouter = Router();
 
-episodeRouter.get('/', episodeController.getEpisodes());
+episodeRouter.get('/:id', episodeController.getEpisodes);
 
 // animeRouter.post();
 

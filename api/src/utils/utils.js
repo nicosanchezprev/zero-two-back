@@ -89,7 +89,54 @@ exports.getAllReviews = async () => {
   return ['Reviews'];
 }
 
-exports.getAllEpisodes = async () => {
-  return ['Reviews'];
+exports.getAllEpisodes = async (id) => {
+	try {
+		let infoApi = await axios.get(`https://kitsu.io/api/edge/anime/${id}/episodes?page%5Blimit%5D=20&page%5Boffset%5D=0`, {headers: {
+			"accept-encoding": "*",
+    	}});
+
+		let allEpisodesAnime = [];
+
+		if(infoApi.data.data) {
+			// First: it would push the first 20 episodes to allEpisodesAnime.
+			await infoApi.data.data.map(ep => {
+				let episode = {};
+				episode.id = ep.id;
+				episode.title = ep.attributes.titles.en_us? ep.attributes.titles.en_us : ep.attributes.titles.en_jp;
+				episode.synopsis = ep.attributes.synopsis;
+				episode.number = ep.attributes.number;
+				episode.seasonNumber = ep.attributes.seasonNumber;
+				episode.airdate = ep.attributes.airdate;
+				episode["length"] = ep.attributes["length"];
+				episode.thumbnail = ep.attributes.thumbnail? ep.attributes.thumbnail : null;
+				allEpisodesAnime.push(episode);
+			});
+			// Second: While infoApi.data.links.next exists it would do axios.get to that link
+			// anda we gonna repeat the procces.
+			while (infoApi.data.links.next) {
+				// here we re asign the variable infoApi to the next link. And because of that it would be escalable.
+				infoApi = await axios.get( infoApi.data.links.next, {headers: {
+					"accept-encoding": "*",
+				}});
+				await infoApi.data.data.map(ep => {
+					let episode = {};
+					episode.id = ep.id;
+					episode.title = ep.attributes.titles.en_us? ep.attributes.titles.en_us : ep.attributes.titles.en_jp;
+					episode.synopsis = ep.attributes.synopsis;
+					episode.number = ep.attributes.number;
+					episode.seasonNumber = ep.attributes.seasonNumber;
+					episode.airdate = ep.attributes.airdate;
+					episode["length"] = ep.attributes["length"];
+					episode.thumbnail = ep.attributes.thumbnail? ep.attributes.thumbnail : null; 
+					//here it would push the episode 21 and forward
+					allEpisodesAnime.push(episode);
+				});
+			}	
+		};
+		return allEpisodesAnime;
+
+  	} catch (error) {
+    	return error.message;
+  	}
 }
 // getApiData().then(info => console.log(info));
