@@ -9,5 +9,6 @@ const router = Router();
 router.use('/animes', animeRouter);
 router.use('/genres', genresRouter);
 // Flow => routes -> controllers -> services -> utils(if its necesary) :D
-
+// 
+// dispatch > bd > client -> id -> api
 module.exports = router;
