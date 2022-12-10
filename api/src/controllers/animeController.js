@@ -1,12 +1,30 @@
 const animeServices = require('../services/animeServices');
-
+const { Anime } = require('../db.js');
 exports.get_Animes = async (req, res) => {
+  
+let reqHasQuery = Object.entries(req.query).length;
   try {
-
-    const allAnimes = await animeServices.fillAnimeModel();
-    res.status(200).send(allAnimes);
+    // console.log(req.query);
+    if (reqHasQuery) {
+      const allAnimes = await animeServices.get_animes_by_query(req.query);
+      res.status(200).send(allAnimes);
+    } else {
+      const allAnimes = await animeServices.fillAnimeModel(req.query);
+      res.status(200).send(allAnimes);
+    }
     
   } catch (error) {
     res.status(400).send(error.message);
+  }
+}
+
+exports.require_Anime = async (req, res) => {
+  let id = req.params.id;
+  try {
+    let anime = await animeServices.get_anime_by_id(id);
+    res.status(200).send(anime);
+
+  } catch (err) {
+    res.status(400).send(err.message);
   }
 }

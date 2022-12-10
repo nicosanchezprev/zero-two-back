@@ -5,11 +5,9 @@ const animeControllers = require('../controllers/animeController');
 const animeRouter = Router();
 
 animeRouter.get('/', animeControllers.get_Animes);
+animeRouter.get('/:id', animeControllers.require_Anime);
+// animeRouter.patch(); //show: true/false -> Admin can disable anime 
 
-// animeRouter.post();
 
-// animeRouter.patch();
-
-// animeRouter.delete();
 
 module.exports = animeRouter;
