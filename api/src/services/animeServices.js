@@ -1,8 +1,10 @@
 const utils = require('../utils/utils');
 const { Anime, Genre } = require('../db.js');
 const { Op } = require('sequelize');
-
+const genreServices = require('./genresServices');
 exports.fillAnimeModel = async () => {
+  
+  await genreServices.fillGenreModel();
 
   let options = {
     include: [{
