@@ -103,4 +103,48 @@ exports.get_anime_by_id = async (id) => {
   } catch (err) {
     throw new Error(err.message);
   }
-}
+};
+
+exports.get_animes_newest = async () => {
+  let options = {
+    include: [{
+      model: Genre,
+      through: {attributes: []},
+      
+    },],
+    order: [['startDate', 'desc'], [Genre, 'id', 'asc']]
+  };
+  try {
+    let allAnimesLatest = await Anime.findAll(options);
+
+    if(!allAnimesLatest) {
+      throw new Error("No se logro hacer el filtrado");
+    } else {
+      return allAnimesLatest;
+    }
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+exports.get_animes_oldest = async () => {
+  let options = {
+    include: [{
+      model: Genre,
+      through: {attributes: []},
+      
+    },],
+    order: [['startDate', 'asc'], [Genre, 'id', 'asc']]
+  };
+  try {
+    let allAnimesOldest = await Anime.findAll(options);
+
+    if(!allAnimesOldest) {
+      throw new Error("No se logro hacer el filtrado");
+    } else {
+      return allAnimesOldest;
+    }
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};

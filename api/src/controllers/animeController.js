@@ -16,7 +16,7 @@ let reqHasQuery = Object.entries(req.query).length;
   } catch (error) {
     res.status(400).send(error.message);
   }
-}
+};
 
 exports.require_Anime = async (req, res) => {
   let id = req.params.id;
@@ -27,4 +27,30 @@ exports.require_Anime = async (req, res) => {
   } catch (err) {
     res.status(400).send(err.message);
   }
-}
+};
+
+exports.require_Newest = async (req, res) => {
+  try {
+    let animesNewest = await animeServices.get_animes_newest();
+    if(!animesNewest) {
+      res.status(400).send("FALLO EL FILTRADO");
+    } else {
+      res.status(200).send(animesNewest);
+    }
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
+
+exports.require_Oldest = async (req, res) => {
+  try {
+    let animesOldest = await animeServices.get_animes_oldest();
+    if(!animesOldest) {
+      res.status(400).send("FALLO EL FILTRADO");
+    } else {
+      res.status(200).send(animesOldest);
+    }
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
