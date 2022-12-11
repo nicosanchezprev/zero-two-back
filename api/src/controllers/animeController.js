@@ -4,7 +4,7 @@ exports.get_Animes = async (req, res) => {
   
 let reqHasQuery = Object.entries(req.query).length;
   try {
-    // console.log(req.query);
+    console.log(req.query);
     if (reqHasQuery) {
       const allAnimes = await animeServices.get_animes_by_query(req.query);
       res.status(200).send(allAnimes);

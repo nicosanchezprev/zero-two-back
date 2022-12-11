@@ -46,8 +46,10 @@ exports.fillAnimeModel = async () => {
 exports.get_animes_by_query = async (query) => {
   
   await this.fillAnimeModel();
-  let limit = query.limit ? query.limit: 9
+  let limit = query.limit ? query.limit: 9;
   let page = query.page ? query.page: 1;
+  let sort = query.sort ? query.sort: 'asc';
+  query.sort && delete query.sort;
   query.page && delete query.page;
    // allow pass multiple genre params => Comedy, Action,...
   let genres = query.genres ? {name: query.genres.split(",")}: {};
@@ -66,7 +68,7 @@ exports.get_animes_by_query = async (query) => {
       through: {attributes: []},
       where: genres
     },],
-    order: [['id', 'asc'], [Genre, 'id', 'asc']],
+    order: [['name', sort], [Genre, 'id', 'asc']],
     limit: limit,
     offset: limit * (page - 1)
   }
