@@ -1,10 +1,9 @@
 const { Router } = require('express');
 // const {  } = require('../db.js'); // import models from db
-const reviewController = require('../controllers/reviewController');
-
+const reviewController = require('../controllers/reviewController.js');
 const reviewRouter = Router();
 
-reviewRouter.get('/', reviewController.getReviews());
+reviewRouter.get('/:id', reviewController.getReviews);
 
 // animeRouter.post();
 

@@ -1,14 +1,56 @@
 const animeServices = require('../services/animeServices');
-
-exports.create_anime = async (req, res) => {
+const { Anime } = require('../db.js');
+exports.get_Animes = async (req, res) => {
+  
+let reqHasQuery = Object.entries(req.query).length;
   try {
-    // Example!
-    // animeCreado = animeService.createAnime(idAnime);
-    // res.status(200).send(animeCreado);
-    const allAnimes = await animeServices.fillAnimeModel();
-    console.log("ESTO ES ALLANIMES", allAnimes);
-    res.status(200).send(allAnimes);
+    console.log(req.query);
+    if (reqHasQuery) {
+      const allAnimes = await animeServices.get_animes_by_query(req.query);
+      res.status(200).send(allAnimes);
+    } else {
+      const allAnimes = await animeServices.fillAnimeModel(req.query);
+      res.status(200).send(allAnimes);
+    }
+    
   } catch (error) {
     res.status(400).send(error.message);
   }
-}
+};
+
+exports.require_Anime = async (req, res) => {
+  let id = req.params.id;
+  try {
+    let anime = await animeServices.get_anime_by_id(id);
+    res.status(200).send(anime);
+
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
+
+exports.require_Newest = async (req, res) => {
+  try {
+    let animesNewest = await animeServices.get_animes_newest();
+    if(!animesNewest) {
+      res.status(400).send("FALLO EL FILTRADO");
+    } else {
+      res.status(200).send(animesNewest);
+    }
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
+
+exports.require_Oldest = async (req, res) => {
+  try {
+    let animesOldest = await animeServices.get_animes_oldest();
+    if(!animesOldest) {
+      res.status(400).send("FALLO EL FILTRADO");
+    } else {
+      res.status(200).send(animesOldest);
+    }
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};

@@ -1,5 +1,6 @@
 const axios = require('axios');
-const fetch = require('node-fetch');
+// const fetch = require('node-fetch');
+
 
 // var options = {
 //   "method": 'GET',
@@ -10,16 +11,23 @@ const fetch = require('node-fetch');
 exports.getAllAnime = async () => {  
   try {
     const numberOfRequests = 10;
-    let offset = 0;
-    let allAnimes = [];
     
+    let allAnimes = [];
+    let offset = 0;
     for(let i = 0; i < numberOfRequests; i++) {
+      
+      // const info = await fetch(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}`).then(response => response.json()).then(data => data.data);
+      const info = await axios.get(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}`,{headers: {
+    "accept-encoding": "*",
+  }});
 
-      const info = await fetch(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=$${offset}`).then(response => response.json()).then(data => data.data);
-      const animesPerRequest = [];
 
-      info.map((animeApi) => {
+      info.data.data.map(async (animeApi) => {
+        const genresApi = await axios.get(animeApi.relationships.genres.links.related, {headers: {
+          "accept-encoding": "*",
+        }});
         let anime = {}
+        anime.id = animeApi.id;
         anime.name = animeApi.attributes.titles.en ? animeApi.attributes.titles.en : animeApi.attributes.titles.en_jp;
         anime.userCount = animeApi.attributes.userCount;
         anime.synopsis = animeApi.attributes.synopsis;
@@ -35,15 +43,20 @@ exports.getAllAnime = async () => {
         anime.episodeCount = animeApi.attributes.episodeCount;
         anime.episodeLength = animeApi.attributes.episodeLength;
         anime.youtubeVideoId = animeApi.attributes.youtubeVideoId;
+        anime.nsfw = animeApi.attributes.nsfw;
+        anime.subtype = animeApi.attributes.subtype;
         anime.showType = animeApi.attributes.showType;
         anime.ageRatingGuide = animeApi.attributes.ageRatingGuide;
-
-        animesPerRequest.push(anime);
+        anime.genres = genresApi.data.data.map(genre => genre.id);
+        
+      
+        allAnimes.push(anime);
+        
       });
-      allAnimes = [...allAnimes, ...animesPerRequest];
-      offset += 20;
+      
+      offset+= 20;
     }
-
+    
     return allAnimes;
 
   } catch (error) {
@@ -55,11 +68,14 @@ exports.getAllGenres = async (limitOfGenres = 62) => {
   try {
     let genres = [];
   
-    let apiData = await fetch(`https://kitsu.io/api/edge/genres?page[limit]=${limitOfGenres}&page[offset]=0`)
-    .then(res => res.json())
-    .then(resJSON => resJSON.data);
+    // let apiData = await fetch(`https://kitsu.io/api/edge/genres?page[limit]=${limitOfGenres}&page[offset]=0`)
+    // .then(res => res.json())
+    // .then(resJSON => resJSON.data);
+    let apiData = await axios.get(`https://kitsu.io/api/edge/genres?page[limit]=${limitOfGenres}&page[offset]=0`, {headers: {
+      "accept-encoding": "*",
+    }})
   
-    genres = apiData.map(genre => {
+    genres = apiData.data.data.map(genre => {
         return {id: genre.id, name: genre.attributes.name}
     })
   
@@ -69,11 +85,87 @@ exports.getAllGenres = async (limitOfGenres = 62) => {
   }
 }
 
-exports.getAllReviews = async () => {
-  return ['Reviews'];
+exports.getAllReviews = async (animeId) => {
+  try {
+    animeId = Number(animeId);
+    if(typeof animeId === 'number') {
+    
+        let reviews = [];
+        let offset = 0;
+        let apiData = await axios.get(`https://kitsu.io/api/edge/anime/${animeId}/reviews?page%5Blimit%5D=20&page%5Boffset%5D=${offset}`, {headers: {
+            "accept-encoding": "*",
+          }});
+        
+        apiData.data.data.map(async apiReview => {
+           
+            let review = {};
+            review.id = apiReview.id;
+            review.content = apiReview.attributes.content;
+            review.rating = apiReview.attributes.rating;
+            review.spoiler = apiReview.attributes.spoiler;
+            review.likesCount = apiReview.attributes.likesCount;
+            review.user = apiReview.relationships.user.links.related
+            reviews.push(review)
+        })
+        return reviews;
+    }
+    else {
+        throw new Error('Invalid anime id. Id must be a number.');
+    }
+
+  } catch (err) {
+    throw new Error(err.message);
+  }
 }
 
-exports.getAllEpisodes = async () => {
-  return ['Reviews'];
+exports.getAllEpisodes = async (id) => {
+	try {
+		let infoApi = await axios.get(`https://kitsu.io/api/edge/anime/${id}/episodes?page%5Blimit%5D=20&page%5Boffset%5D=0`, {headers: {
+			"accept-encoding": "*",
+    	}});
+
+		let allEpisodesAnime = [];
+
+		if(infoApi.data.data) {
+			// First: it would push the first 20 episodes to allEpisodesAnime.
+			await infoApi.data.data.map(ep => {
+				let episode = {};
+				episode.id = ep.id;
+				episode.title = ep.attributes.titles.en_us? ep.attributes.titles.en_us : ep.attributes.titles.en_jp;
+				episode.synopsis = ep.attributes.synopsis;
+				episode.number = ep.attributes.number;
+				episode.seasonNumber = ep.attributes.seasonNumber;
+				episode.airdate = ep.attributes.airdate;
+				episode["length"] = ep.attributes["length"];
+				episode.thumbnail = ep.attributes.thumbnail? ep.attributes.thumbnail : null;
+				allEpisodesAnime.push(episode);
+			});
+			// Second: While infoApi.data.links.next exists it would do axios.get to that link
+			// anda we gonna repeat the procces.
+			while (infoApi.data.links.next) {
+				// here we re asign the variable infoApi to the next link. And because of that it would be escalable.
+				infoApi = await axios.get( infoApi.data.links.next, {headers: {
+					"accept-encoding": "*",
+				}});
+				await infoApi.data.data.map(ep => {
+					let episode = {};
+					episode.id = ep.id;
+					episode.title = ep.attributes.titles.en_us? ep.attributes.titles.en_us : ep.attributes.titles.en_jp;
+					episode.synopsis = ep.attributes.synopsis;
+					episode.number = ep.attributes.number;
+					episode.seasonNumber = ep.attributes.seasonNumber;
+					episode.airdate = ep.attributes.airdate;
+					episode["length"] = ep.attributes["length"];
+					episode.thumbnail = ep.attributes.thumbnail? ep.attributes.thumbnail : null; 
+					//here it would push the episode 21 and forward
+					allEpisodesAnime.push(episode);
+				});
+			}	
+		};
+		return allEpisodesAnime;
+
+  	} catch (error) {
+    	return error.message;
+  	}
 }
 // getApiData().then(info => console.log(info));
