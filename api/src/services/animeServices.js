@@ -50,7 +50,7 @@ exports.get_animes_by_query = async (query) => {
   let page = query.page ? query.page: 1;
   let sort = query.sort ? query.sort: 'asc';
   query.sort && delete query.sort;
-  query.page && delete query.page;
+
    // allow pass multiple genre params => Comedy, Action,...
   let genres = query.genres ? {name: query.genres.split(",")}: {};
   query.genres && delete query.genres;
@@ -69,10 +69,14 @@ exports.get_animes_by_query = async (query) => {
       where: genres
     },],
     order: [['name', sort], [Genre, 'id', 'asc']],
-    limit: limit,
-    offset: limit * (page - 1)
-  }
 
+  }
+  console.log(query.page)
+  if(query.page) {
+    options.limit = limit ;
+    options.offset = (limit * (page - 1));
+  } 
+  query.page && delete query.page;
   try {
     let dbData = await Anime.findAll(options)
     // db con info
@@ -108,13 +112,19 @@ exports.get_anime_by_id = async (id) => {
 };
 
 exports.get_animes_newest = async () => {
+  // this has beeen harcoded for show 9 newest animes
+  // do the right logic for paginated 
+  let limit = 9;
+  let page = 1;
   let options = {
     include: [{
       model: Genre,
       through: {attributes: []},
       
     },],
-    order: [['startDate', 'desc'], [Genre, 'id', 'asc']]
+    order: [['startDate', 'desc'], [Genre, 'id', 'asc']],
+    limit: 9 || limit,
+    offset :(limit * (page - 1)) || 0
   };
   try {
     let allAnimesLatest = await Anime.findAll(options);
