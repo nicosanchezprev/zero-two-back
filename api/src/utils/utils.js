@@ -28,7 +28,7 @@ exports.getAllAnime = async () => {
         }});
         let anime = {}
         anime.id = animeApi.id;
-        anime.name = animeApi.attributes.titles.en ? animeApi.attributes.titles.en : animeApi.attributes.titles.en_jp;
+        anime.name = animeApi.attributes.titles.en ? animeApi.attributes.titles.en : animeApi.attributes.titles.en_jp ? animeApi.attributes.titles.en_jp : "No hay nombre";
         anime.userCount = animeApi.attributes.userCount;
         anime.synopsis = animeApi.attributes.synopsis;
         anime.averageRating = animeApi.attributes.averageRating;
@@ -38,7 +38,7 @@ exports.getAllAnime = async () => {
         anime.popularityRank = animeApi.attributes.popularityRank;
         anime.ratingRank = animeApi.attributes.ratingRank;
         anime.status = animeApi.attributes.status;
-        anime.posterImage = animeApi.attributes.posterImage.original; // va original
+        anime.posterImage = animeApi.attributes.posterImage?.original; // va original
         anime.coverImage = animeApi.attributes.coverImage? animeApi.attributes.coverImage.original : null; // va original
         anime.episodeCount = animeApi.attributes.episodeCount;
         anime.episodeLength = animeApi.attributes.episodeLength;

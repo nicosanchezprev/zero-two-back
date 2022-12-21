@@ -1,6 +1,6 @@
 const utils = require('../utils/utils');
 const { Anime, Genre } = require('../db.js');
-const { Op } = require('sequelize');
+const { Op, Sequelize } = require('sequelize');
 const genreServices = require('./genresServices');
 exports.fillAnimeModel = async () => {
   
@@ -111,7 +111,7 @@ exports.get_anime_by_id = async (id) => {
   }
 };
 
-exports.get_animes_newest = async () => {
+exports.get_animes_newest = async (sort) => {
   // this has beeen harcoded for show 9 newest animes
   // do the right logic for paginated 
   let limit = 9;
@@ -126,9 +126,13 @@ exports.get_animes_newest = async () => {
     limit: 9 || limit,
     offset :(limit * (page - 1)) || 0
   };
+
   try {
     let allAnimesLatest = await Anime.findAll(options);
 
+    if (sort === 'rating') {
+      allAnimesLatest = allAnimesLatest.sort((a,b) => (a.averageRating > b.averageRating) ? -1 : ((b.averageRating > a.averageRating) ? 1 : 0))
+    };
     if(!allAnimesLatest) {
       throw new Error("No se logro hacer el filtrado");
     } else {

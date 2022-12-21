@@ -31,7 +31,10 @@ exports.require_Anime = async (req, res) => {
 
 exports.require_Newest = async (req, res) => {
   try {
-    let animesNewest = await animeServices.get_animes_newest();
+    const {sort} = req.query;
+
+    let animesNewest;
+    sort ? animesNewest = await animeServices.get_animes_newest(sort) : animesNewest = await animeServices.get_animes_newest();
     if(!animesNewest) {
       res.status(400).send("FALLO EL FILTRADO");
     } else {
