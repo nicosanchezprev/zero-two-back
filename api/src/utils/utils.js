@@ -7,26 +7,8 @@ const axios = require('axios');
 //   "Accept": "application/vnd.api+json",
 //   "Content-Type": "application/vnd.api+json"
 // };
-
-exports.getAllAnime = async () => {  
-  try {
-    const numberOfRequests = 10;
-    
-    let allAnimes = [];
-    let offset = 0;
-    for(let i = 0; i < numberOfRequests; i++) {
-      
-      // const info = await fetch(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}`).then(response => response.json()).then(data => data.data);
-      const info = await axios.get(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}`,{headers: {
-    "accept-encoding": "*",
-  }});
-
-
-      info.data.data.map(async (animeApi) => {
-        const genresApi = await axios.get(animeApi.relationships.genres.links.related, {headers: {
-          "accept-encoding": "*",
-        }});
-        let anime = {}
+const createAnimeObject = (animeApi, genresApi) => {
+  let anime = {}
         anime.id = animeApi.id;
         anime.name = animeApi.attributes.titles.en ? animeApi.attributes.titles.en : animeApi.attributes.titles.en_jp ? animeApi.attributes.titles.en_jp : "No hay nombre";
         anime.userCount = animeApi.attributes.userCount;
@@ -49,7 +31,30 @@ exports.getAllAnime = async () => {
         anime.ageRatingGuide = animeApi.attributes.ageRatingGuide;
         anime.genres = genresApi.data.data.map(genre => genre.id);
         
+        return anime
+}
+exports.getAllAnime = async () => {  
+  try {
+  
+    let allAnimes = [];
+    const numberOfRequests = 12;
+
+    let offset = 0;
+    for(let i = 0; i < numberOfRequests; i++) {
       
+      // const info = await fetch(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}`).then(response => response.json()).then(data => data.data);
+      const info = await axios.get(`https://kitsu.io/api/edge/anime?page[limit]=20&page[offset]=${offset}
+      ${i >4  && i <=9 ? '&sort=-userCount': i > 9 ? '': '&filter[status]=current&sort=-averageRating'}`,{headers: {
+    "accept-encoding": "*",
+  }});
+
+
+      info.data.data.map(async (animeApi) => {
+        const genresApi = await axios.get(animeApi.relationships.genres.links.related, {headers: {
+          "accept-encoding": "*",
+        }});
+        
+        let anime = createAnimeObject(animeApi, genresApi)
         allAnimes.push(anime);
         
       });

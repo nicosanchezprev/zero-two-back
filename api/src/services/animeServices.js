@@ -71,7 +71,7 @@ exports.get_animes_by_query = async (query) => {
     order: [['name', sort], [Genre, 'id', 'asc']],
 
   }
-  console.log(query.page)
+  // console.log(query.page)
   if(query.page) {
     options.limit = limit ;
     options.offset = (limit * (page - 1));
@@ -111,11 +111,11 @@ exports.get_anime_by_id = async (id) => {
   }
 };
 
-exports.get_animes_newest = async (sort) => {
+exports.get_animes_newest = async (sort, page) => {
   // this has beeen harcoded for show 9 newest animes
   // do the right logic for paginated 
+  console.log(page)
   let limit = 9;
-  let page = 1;
   let options = {
     include: [{
       model: Genre,
@@ -123,19 +123,28 @@ exports.get_animes_newest = async (sort) => {
       
     },],
     order: [['startDate', 'desc'], [Genre, 'id', 'asc']],
-    limit: 9 || limit,
-    offset :(limit * (page - 1)) || 0
   };
 
   try {
-    let allAnimesLatest = await Anime.findAll(options);
 
+    if (page) {
+      console.log('PAGE', page)
+      page = Number(page);
+      options.limit = 9 || limit
+      options.offset = (limit * (page - 1)) || 0
+    }
+    let allAnimesLatest = await Anime.findAll(options);
+    
     if (sort === 'rating') {
       allAnimesLatest = allAnimesLatest.sort((a,b) => (a.averageRating > b.averageRating) ? -1 : ((b.averageRating > a.averageRating) ? 1 : 0))
     };
+
+ 
+
     if(!allAnimesLatest) {
       throw new Error("No se logro hacer el filtrado");
     } else {
+      allAnimesLatest = allAnimesLatest.slice(0, 9)
       return allAnimesLatest;
     }
   } catch (err) {
