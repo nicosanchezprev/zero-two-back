@@ -39,7 +39,7 @@ exports.fillAnimeModel = async () => {
     };
     
   } catch (error) {
-    return "ESTO ES INFO" + error.message;
+    throw new Error("ESTO ES INFO" + error.message); 
   }
 };
 
