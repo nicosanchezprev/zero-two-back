@@ -9,3 +9,13 @@ exports.getEpisodes = async (req, res) => {
         res.status(404).send(error.message)
     }
 }
+
+exports.getEpisodesNewest = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const newestEpisodes = await episodeServices.getNewestEpisodes(id);
+        res.status(200).send(newestEpisodes);
+    } catch (error) {
+        res.status(404).send(error.message);
+    }
+}

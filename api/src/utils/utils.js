@@ -65,7 +65,7 @@ exports.getAllAnime = async () => {
     return allAnimes;
 
   } catch (error) {
-    return "ESTO ES ERROR UTILS " + error.message;
+    throw new Error(error.message);
   }
 }
 
@@ -86,7 +86,7 @@ exports.getAllGenres = async (limitOfGenres = 62) => {
   
     return genres
   } catch (error) {
-    return error.message;
+    throw new Error(error.message);
   }
 }
 
@@ -170,7 +170,6 @@ exports.getAllEpisodes = async (id) => {
 		return allEpisodesAnime;
 
   	} catch (error) {
-    	return error.message;
+    	throw new Error(error.message);
   	}
 }
-// getApiData().then(info => console.log(info));
