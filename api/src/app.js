@@ -1,25 +1,19 @@
 const express = require('express');
+const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const routes = require('./routes/index.js');
 require('dotenv').config();
 require('./db.js');
-
+const helmet = require("helmet");
+const nocache = require("nocache");
 const server = express();
+const dotenv = require("dotenv");
+const {errorHandler} = require('./middleware/error.middleware')
+const {notFoundHandler} = require('./middleware/not-found.middleware')
 
-const { auth, requiresAuth } = require('express-openid-connect');
-const { json } = require('body-parser');
-server.use(
-  auth({
-    authRequired: false,
-    auth0Logout: true,
-    issuerBaseURL: process.env.ISSUER_BASE_URL,
-    baseURL: process.env.BASE_URL,
-    clientID: process.env.CLIENT_ID,
-    secret: process.env.SECRET,
-  })
-);
+
 
 server.name = 'API';
 
@@ -34,16 +28,51 @@ server.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
   next();
 });
-server.get('/', (req, res) => {
-  res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
-})
 
-server.get('/profile', requiresAuth(), (req, res) => {
-  res.send(JSON.stringify(req.oidc.user));
-})
+// auth0
+
+const PORT = parseInt(process.env.PORT, 10);
+const CLIENT_ORIGIN_URL = process.env.CLIENT_ORIGIN_URL;
+
 
 server.use('/', routes);
+server.use(
+  helmet({
+    hsts: {
+      maxAge: 31536000,
+    },
+    contentSecurityPolicy: {
+      useDefaults: false,
+      directives: {
+        "default-src": ["'none'"],
+        "frame-ancestors": ["'none'"],
+      },
+    },
+    frameguard: {
+      action: "deny",
+    },
+  })
+);
 
+server.use((req, res, next) => {
+  res.contentType("application/json; charset=utf-8");
+  next();
+});
+server.use(nocache());
+
+server.use(
+  cors({
+    origin: CLIENT_ORIGIN_URL,
+    methods: ["GET"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+    maxAge: 86400,
+  })
+);
+
+// server.use("/messages", messagesRouter);
+
+server.use(errorHandler);
+server.use(notFoundHandler);
 // Error catching endware.
 server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   const status = err.status || 500;
