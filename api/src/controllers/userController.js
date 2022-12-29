@@ -2,10 +2,10 @@ const userServices = require('../services/userServices');
 
 
 exports.getUser = async (req, res) => {
-    const userId = req.params.id;
+    const email = req.params.email;
 
     try {
-        const user = await userServices.getUserInfo(userId);
+        const user = await userServices.getUserInfo(email);
         res.status(200).send(user);
     } catch (err) {
         res.status(404).send(err.message)

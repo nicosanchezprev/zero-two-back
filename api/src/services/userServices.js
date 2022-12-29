@@ -1,10 +1,10 @@
 const { User } = require('../db.js');
 
 
-exports.getUserInfo = async (id) => {
-    console.log(id)
+exports.getUserInfo = async (email) => {
+    console.log(email)
     try {
-        const user = await User.findByPk(id);
+        const user = await User.findOne({where: {email: email}});
         return user;
       } catch (err) {
         throw new Error(err.message);
