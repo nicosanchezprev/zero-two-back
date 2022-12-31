@@ -1,5 +1,4 @@
 const { Router } = require('express');
-// const {  } = require('../db.js'); // import models from db
 const userController = require('../controllers/userController');
 const { validateAccessToken, verifyToken } = require("../middleware/auth0.middleware.js");
 
