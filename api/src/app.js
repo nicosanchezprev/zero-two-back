@@ -9,7 +9,6 @@ require('./db.js');
 const helmet = require("helmet");
 const nocache = require("nocache");
 const server = express();
-const dotenv = require("dotenv");
 const {errorHandler} = require('./middleware/error.middleware')
 const {notFoundHandler} = require('./middleware/not-found.middleware')
 
@@ -24,7 +23,7 @@ server.use(morgan('dev'));
 server.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*'); // update to match the domain you will make the request from
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
   next();
 });
@@ -71,8 +70,8 @@ server.use(
 
 // server.use("/messages", messagesRouter);
 
-server.use(errorHandler);
-server.use(notFoundHandler);
+// server.use(errorHandler);
+// server.use(notFoundHandler);
 // Error catching endware.
 server.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
   const status = err.status || 500;
