@@ -8,7 +8,6 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-   
     name: {
       type: DataTypes.STRING,
       allowNull: false
@@ -28,12 +27,12 @@ module.exports = (sequelize) => {
    /* airdate:{},
     length:{},
     thumbnail:{},*/
-    user_id:{
-        type:DataTypes.INTEGER,
-    },
-    anime_id:{
-        type:DataTypes.INTEGER,
-    },
+    // user_id:{
+    //     type:DataTypes.INTEGER,
+    // },
+    // anime_id:{
+    //     type:DataTypes.INTEGER,
+    // },
   },
   {
     timestamps: false

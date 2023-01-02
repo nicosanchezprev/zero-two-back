@@ -173,3 +173,30 @@ exports.getAllEpisodes = async (id) => {
     	throw new Error(error.message);
   	}
 }
+
+exports.getEpisode= async (idAnime, idEpisode) => {
+  try {
+    let apiAnime = await axios.get(`https://kitsu.io/api/edge/anime/${idAnime}`, {headers: {
+			"accept-encoding": "*",
+    	}});
+    let apiEpisode = await axios.get(`https://kitsu.io/api/edge/episodes/${idEpisode}`, {headers: {
+			"accept-encoding": "*",
+    	}});
+      let ep = apiEpisode.data.data;
+      let anime = apiAnime.data.data;
+      let episode = {};
+      episode.id = ep.id;
+      episode.title = ep.attributes.titles.en_us? ep.attributes.titles.en_us : ep.attributes.titles.en_jp;
+      episode.synopsis = ep.attributes.synopsis;
+      episode.number = ep.attributes.number;
+      episode.seasonNumber = ep.attributes.seasonNumber;
+      episode.airdate = ep.attributes.airdate;
+      episode["length"] = ep.attributes["length"];
+      episode.thumbnail = ep.attributes.thumbnail? ep.attributes.thumbnail : null; 
+      episode.coverImage = anime.attributes.coverImage? anime.attributes.coverImage.original : null;
+    return episode
+
+  } catch (err) {
+    throw new Error(err.message);
+  }
+}

@@ -6,6 +6,7 @@ const episodeRouter = Router();
 
 episodeRouter.get('/newest/:id', episodeController.getEpisodesNewest);
 episodeRouter.get('/:id', episodeController.getEpisodes);
+episodeRouter.get('/:idAnime/:idEpisode', episodeController.getEpisode);
 
 // animeRouter.post();
 

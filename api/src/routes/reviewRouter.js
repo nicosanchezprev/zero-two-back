@@ -3,8 +3,16 @@ const { Router } = require('express');
 const reviewController = require('../controllers/reviewController.js');
 const reviewRouter = Router();
 
-reviewRouter.get('/:id', reviewController.getReviews);
 
+//Get the reviews for an anime from the api
+reviewRouter.get('/:animeId', reviewController.getReviews);
+
+//Get all the comments for the episode
+reviewRouter.get('/episode/:episodeId', reviewController.getReviewsByEpisode);
+//Post a new comment, return the comment and the user who post it
+reviewRouter.post('/episode/:episodeId/addComment', reviewController.postComment)
+//Post a new reply for a comment, return the reply to the comment
+reviewRouter.post('/episode/:episodeId/replyTo/:idComment', reviewController.postReply)
 // animeRouter.post();
 
 // animeRouter.patch();

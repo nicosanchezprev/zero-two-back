@@ -46,7 +46,7 @@ exports.fillAnimeModel = async () => {
 exports.get_animes_by_query = async (query) => {
   
   await this.fillAnimeModel();
-  let limit = query.limit ? query.limit: 9;
+  let limit = query.limit ? query.limit: 15;
   let page = query.page ? query.page: 1;
   let sort = query.sort ? query.sort: 'asc';
   query.sort && delete query.sort;
@@ -130,7 +130,7 @@ exports.get_animes_newest = async (sort, page) => {
     if (page) {
       console.log('PAGE', page)
       page = Number(page);
-      options.limit = 9 || limit
+      options.limit = 15 || limit
       options.offset = (limit * (page - 1)) || 0
     }
     let allAnimesLatest = await Anime.findAll(options);

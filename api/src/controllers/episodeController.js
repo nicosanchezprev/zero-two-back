@@ -1,5 +1,14 @@
 const episodeServices = require('../services/episodeService');
-
+exports.getEpisode = async (req, res) => {
+    const { idAnime, idEpisode } = req.params;
+    console.log(idAnime,idEpisode)
+    try {
+        const episode = await episodeServices.getEpisode(idAnime, idEpisode);
+        res.status(200).send(episode)
+    } catch (err) {
+        res.status(404).send(err.message);
+    }
+}
 exports.getEpisodes = async (req, res) => {
     const { id } = req.params;
     try {
