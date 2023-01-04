@@ -23,10 +23,9 @@ exports.getUserInfoWithGoogle = async (email) => {
 exports.getUserInfo = async (email, password) => {
     console.log('email', email)
     try {
-        const user = await User.findOne({where: {email: email}});
+        const user = await User.findOne({where: {email: email, email_verified: true, registered: true}});
         if(!user) throw new Error('User has not been registered. Please Sign up')
         else {
-          
           let hashedPassword = user.password;
           console.log('hashed' , hashedPassword, password)
           let passwordIsValid = await comparePassword(password, hashedPassword);
@@ -73,12 +72,13 @@ exports.createUser = async (user) => {
 
   const email = user.email;
   const password = user.password.toString();
-  const userInDatabase = await User.findAll({where: {email: email}});
+  const userInDatabase = await User.findAll({where: {email: email, email_verified: true, registered: true}});
   const userExists = await userInDatabase.length 
   //Hashinh password to secure 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
+  delete user.changePassword;
   // Asigning/Verifying role, permissions and plan /hardcoded
   user.password = hashedPassword;
   user.rol = user.email === 'juandavidgr10002@gmail.com' ? 'Admin': 'User';
@@ -91,14 +91,15 @@ exports.createUser = async (user) => {
     } else {
       const userCreated = await User.create(user);
       let token = generateToken({email: user.email});
-      console.log(token)
+      console.log(token);
+      console.log(user);
       const message = `${'http://localhost:3001'}/user/verify/${email}/${token}`;
       await sendEmail(email, 'Zero Two: Verify your account', message)
       return userCreated;
     }
    
   } catch (err) {
-    throw new Error(err.message);
+    throw new Error(err);
   }
 }
 

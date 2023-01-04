@@ -10,7 +10,7 @@ exports.getUserWithGoogle = async (req, res) => {
         res.status(404).send(err.message)
     }
 }
-exports.getUser = async (req, res) => {
+exports.loginUser = async (req, res) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
     
@@ -40,6 +40,7 @@ exports.createUser = async (req, res) => {
         const userCreated = await userServices.createUser(user);
         res.status(201).send({msg: 'You are almost ready, please verify you email', data: userCreated});
     } catch (err) {
+        console.log('ERROR CONTROLLER: ', err)
         res.status(409).send(err.message)
     }
 }

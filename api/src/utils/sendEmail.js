@@ -18,6 +18,9 @@ const sendEmail = async(email, subject, text) => {
             auth: {
                 user: "juandavidgr10002@gmail.com",
                 pass: "ddlpwwmdewbgpqhd"
+            },
+            tls: {
+                rejectUnauthorized: false
             }
     })
     await transporter.sendMail({
@@ -25,10 +28,11 @@ const sendEmail = async(email, subject, text) => {
         to: email,
         subject: subject,
         text: text,
+        html: `<h5>${text}</h5>`
       });
       
     }catch (err) {
-        throw new Error("email not sent");
+        throw new Error(err);
     }
 }
 
