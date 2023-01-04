@@ -12,7 +12,7 @@ exports.fillAnimeModel = async () => {
       through: {attributes: []},
       
     },],
-
+    distinct: true,
     order: [['id', 'asc'], [Genre, 'id', 'asc']]
   }
 
@@ -33,7 +33,7 @@ exports.fillAnimeModel = async () => {
         const animeToFind = await Anime.findOne({where: {id: anime.id}});
         await animeToFind.setGenres(auxGenres);
       }))
-      const dbData = await Anime.findAll(options);
+      const dbData = await Anime.findAndCountAll(options);
       
       return dbData;
     };
@@ -46,6 +46,7 @@ exports.fillAnimeModel = async () => {
 exports.get_animes_by_query = async (query) => {
   
   await this.fillAnimeModel();
+  console.log(query)
   let limit = query.limit ? query.limit: 15;
   let page = query.page ? query.page: 1;
   let sort = query.sort ? query.sort: 'asc';
@@ -68,6 +69,7 @@ exports.get_animes_by_query = async (query) => {
       through: {attributes: []},
       where: genres
     },],
+    distinct: true,
     order: [['name', sort], [Genre, 'id', 'asc']],
 
   }
@@ -78,7 +80,7 @@ exports.get_animes_by_query = async (query) => {
   } 
   query.page && delete query.page;
   try {
-    let dbData = await Anime.findAll(options)
+    let dbData = await Anime.findAndCountAll(options)
     // db con info
     if(dbData) return dbData;
     else throw new Error('Nooo');
@@ -114,7 +116,9 @@ exports.get_anime_by_id = async (id) => {
 exports.get_animes_newest = async (sort, page) => {
   // this has beeen harcoded for show 9 newest animes
   // do the right logic for paginated 
-  console.log(page)
+  
+  
+
   let limit = 9;
   let options = {
     include: [{
@@ -122,36 +126,75 @@ exports.get_animes_newest = async (sort, page) => {
       through: {attributes: []},
       
     },],
+    distinct:true,
     order: [['startDate', 'desc'], [Genre, 'id', 'asc']],
   };
 
   try {
-
+    let pageSort = page ? Number(page) : 1
     if (page) {
       console.log('PAGE', page)
       page = Number(page);
       options.limit = 15 || limit
       options.offset = (limit * (page - 1)) || 0
     }
-    let allAnimesLatest = await Anime.findAll(options);
+    let allAnimesLatest = await Anime.findAndCountAll(options);
     
     if (sort === 'rating') {
-      allAnimesLatest = allAnimesLatest.sort((a,b) => (a.averageRating > b.averageRating) ? -1 : ((b.averageRating > a.averageRating) ? 1 : 0))
-    };
+      allAnimesLatest.rows = allAnimesLatest.rows.sort((a,b) => (a.averageRating > b.averageRating) ? -1 : ((b.averageRating > a.averageRating) ? 1 : 0))
 
- 
+    };
+    // if (sort === 'rating' && page) {
+    //   allAnimesLatest.rows = allAnimesLatest.rows.sort((a,b) => (a.averageRating > b.averageRating) ? -1 : ((b.averageRating > a.averageRating) ? 1 : 0))
+    //   allAnimesLatest.rows = allAnimesLatest.rows.slice((9* (Number(page) - 1)), 9)
+    // };
 
     if(!allAnimesLatest) {
       throw new Error("No se logro hacer el filtrado");
     } else {
-      allAnimesLatest = allAnimesLatest.slice(0, 9)
+      allAnimesLatest = allAnimesLatest
       return allAnimesLatest;
     }
   } catch (err) {
     throw new Error(err.message);
   }
 };
+exports.get_animes_trending = async (sort, page) => {
+  page = Number(page)
+  let limit = 9;
+  let options = {
+    include: [{
+      model: Genre,
+      through: {attributes: []},
+      
+    },],
+    distinct:true,
+    order: [['startDate', 'desc'], [Genre, 'id', 'asc']],
+  };
 
+  try {
+
+  
+    let allAnimeTrending = await Anime.findAndCountAll(options);
+    
+    if (page) {
+      
+      allAnimeTrending.rows = allAnimeTrending.rows.sort((a,b) => (a.averageRating > b.averageRating) ? -1 : ((b.averageRating > a.averageRating) ? 1 : 0))
+ 
+      allAnimeTrending.rows = allAnimeTrending.rows.slice((9* (Number(page) - 1)), (9 * Number(page)))
+    };
+
+    if(!allAnimeTrending) {
+      throw new Error("No se logro hacer el filtrado");
+    } else {
+      allAnimeTrending.rows = allAnimeTrending.rows.sort((a,b) => (a.averageRating > b.averageRating) ? -1 : ((b.averageRating > a.averageRating) ? 1 : 0))
+      allAnimeTrending = allAnimeTrending
+      return allAnimeTrending;
+    }
+  } catch (err) {
+    throw new Error(err.message);
+  }
+}
 exports.get_animes_oldest = async () => {
   let options = {
     include: [{

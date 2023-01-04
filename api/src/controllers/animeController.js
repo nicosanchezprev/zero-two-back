@@ -45,6 +45,20 @@ exports.require_Newest = async (req, res) => {
     res.status(400).send(err.message);
   }
 };
+exports.require_Trending = async (req, res) => {
+  try {
+    const {sort, page} = req.query;
+    console.log(sort,page)
+    let animesNewest = await animeServices.get_animes_trending(sort, page);
+    if(!animesNewest) {
+      res.status(400).send("FALLO EL FILTRADO");
+    } else {
+      res.status(200).send(animesNewest);
+    }
+  } catch (err) {
+    res.status(400).send(err.message);
+  }
+};
 
 exports.require_Oldest = async (req, res) => {
   try {
