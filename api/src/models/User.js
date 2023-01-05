@@ -33,8 +33,6 @@ module.exports = (sequelize) => {
         type:DataTypes.BOOLEAN,
         defaultValue: false
     },
-  
-   
     registered:{
         type:DataTypes.BOOLEAN,
         defaultValue: false
@@ -44,7 +42,7 @@ module.exports = (sequelize) => {
         defaultValue: "User"
     },
     permissions: {
-        type:DataTypes.ENUM("All", "Edit", "Watch"),
+        type:DataTypes.ENUM("All", "Edit", "Watch", "Banned"),
         defaultValue: "Watch"
     }
   },
