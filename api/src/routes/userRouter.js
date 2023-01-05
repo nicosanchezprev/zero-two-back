@@ -3,7 +3,7 @@ const userController = require('../controllers/userController');
 const { validateAccessToken, verifyToken } = require("../middleware/auth0.middleware.js");
 
 const userRouter = Router();
-userRouter.post('/', userController.loginUser);
+userRouter.get('/', userController.getUser);
 userRouter.post('/login', userController.loginUser);
 userRouter.post('/google', verifyToken, userController.getUserWithGoogle);
 userRouter.post('/register',userController.createUser)

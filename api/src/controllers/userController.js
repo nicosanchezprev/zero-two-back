@@ -1,5 +1,20 @@
 const userServices = require('../services/userServices');
 
+
+exports.getUser= async (req, res) => {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+    let email = req.body.email;
+    try {
+        const user = await userServices.getUserInfo(token, email);
+        res.status(200).send(user);
+        
+    } catch (err) {
+        console.log(err)
+        res.status(404).send(err.message)
+    }
+}
+
 exports.getUserWithGoogle = async (req, res) => {
     let userEmail = req.user['https://example.com/email']
     try {
@@ -7,17 +22,19 @@ exports.getUserWithGoogle = async (req, res) => {
         res.status(200).send(user);
         
     } catch (err) {
+        console.log(err)
         res.status(404).send(err.message)
     }
 }
 exports.loginUser = async (req, res) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
-    
+
     try {
-        const user = await userServices.getUserInfo(userEmail, userPassword);
+        const user = await userServices.loginUser(userEmail, userPassword);
         res.status(200).send(user);
     } catch (err) {
+        console.log(err)
         res.status(404).send(err.message)
     }
 }

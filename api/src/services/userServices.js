@@ -19,8 +19,33 @@ exports.getUserInfoWithGoogle = async (email) => {
     throw new Error(error.message)
   }
 }
+exports.getUserInfo = async (token, email) => {
+  try {
 
-exports.getUserInfo = async (email, password) => {
+    if (!token) {
+      throw new Error('Invalid user');
+
+    } else {
+
+      return jwt.verify(token, process.env.TOKEN_SECRET, {algorithms: 'HS256'}, async function(err , verified) {
+        if (err) throw new Error(err.message);
+        else {
+          const email = verified.email;
+          const user = await User.findOne({where: {email: email, email_verified: true, registered: true}})
+          
+          if(user) {
+            return user
+          }
+          else throw new Error('Unauthorized')
+        }
+      } )
+    }
+  } catch (error) {
+    throw new Error(error.message)
+  }
+}
+
+exports.loginUser = async (email, password) => {
     console.log('email', email)
     try {
         const user = await User.findOne({where: {email: email, email_verified: true, registered: true}});
@@ -30,8 +55,13 @@ exports.getUserInfo = async (email, password) => {
           console.log('hashed' , hashedPassword, password)
           let passwordIsValid = await comparePassword(password, hashedPassword);
           if (passwordIsValid) {
-            if(user.email_verified && user.registered) return user
-            throw new Error('Unregistered account. Complete the account veryfication')
+            if(user.email_verified && user.registered) {
+              let token = generateToken({email: user.email});
+              return {token: token}
+            } else {
+              throw new Error('Unregistered account. Complete the account veryfication')
+            }
+            
           } else {
             throw new Error('Invalid password')
           }
@@ -56,6 +86,7 @@ exports.verifyUser = async (token, email) => {
           user.registered = true;
           console.log(verified)  
           await user.save()
+          console.log(verified)
           return user;
         }
       } )
