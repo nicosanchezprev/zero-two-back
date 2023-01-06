@@ -36,12 +36,16 @@ const { Anime, Genre, Review,Episodes,User} = sequelize.models;
  // Aca vendrian las relaciones
  Anime.belongsToMany(Genre, { through: 'anime_genre' });//relacion de muchos a muchos generos y animes
  Genre.belongsToMany(Anime, { through: 'anime_genre' }); 
- 
-  User.hasMany(Review)
-  Review.belongsTo(User);
 
- Review.hasMany(Review) 
- Review.belongsTo(Review, {foreignKey: 'reply_id', as: 'Reply'})
+ User.hasMany(Review);
+ Review.belongsTo(User);
+
+ Review.hasMany(Review, {as: "Replies" ,foreignKey: 'reply_id', }) 
+ Review.belongsTo(Review, {foreignKey: 'reply_id', as: 'Parent'})
+ 
+
+
+
 //  Anime.hasMany(Episodes)//relacion de uno a muchos anime y episodes
 //  Episodes.belongsTo(Anime);
  

@@ -12,7 +12,7 @@ exports.getUserInfoWithGoogle = async (email) => {
     if (!user) {
       throw new Error('User has not been registered yet. Please Sign up')
     } else {
-      if (user.permissions = "Banned") throw new Error('User has been banned');
+      if (user.permissions === "Banned") throw new Error('User has been banned');
       if(user.email_verified && user.registered) return user;
       throw new Error('Unregistered account. Complete the account veryfication')
     }
@@ -52,7 +52,7 @@ exports.loginUser = async (email, password) => {
         const user = await User.findOne({where: {email: email, email_verified: true, registered: true}});
         if(!user) throw new Error('User has not been registered. Please Sign up')
         else {
-          if (user.permissions = "Banned") throw new Error('User has been banned');
+          if (user.permissions === "Banned") throw new Error('User has been banned');
           let hashedPassword = user.password;
           console.log('hashed' , hashedPassword, password)
           let passwordIsValid = await comparePassword(password, hashedPassword);

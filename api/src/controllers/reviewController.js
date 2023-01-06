@@ -15,10 +15,12 @@ exports.postComment = async (req, res) => {
 exports.postReply = async (req, res) => {
     let reply = req.body;
     let userNickname = req.body.nickname;
+    let espisodeId = req.params.episodeId;
+    let idComment = req.params.idComment;
     delete reply.nickname
     console.log(userNickname)
     try {
-        const replyAdded = await reviewServices.addReply(reply, userNickname);
+        const replyAdded = await reviewServices.addReply(reply, userNickname, espisodeId, idComment);
         res.status(200).send(replyAdded);
     } catch (err) {
         res.status(404).send(err.message)
