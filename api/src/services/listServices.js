@@ -45,7 +45,7 @@ exports.addAnimeToList = async (listInfo) => {
 
   try {
     const anime = await Anime.findOne({ where: {id: animeId} });
-    const list = await  List.findOne({ where: {id: listId} });
+    const list = await List.findOne({ where: {id: listId} });
 
     if(!anime) {
       throw new Error('Anime not found');
@@ -69,6 +69,22 @@ exports.addAnimeToList = async (listInfo) => {
         return 'Anime added to list succesfully!';
       }
     }
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+exports.editNameList = async (listInfo) => {
+  const newName = listInfo.name;
+  const listId = listInfo.id;
+
+  try {
+    const list = await List.findOne({ where: {id: listId} });
+    if (!list) throw new Error('List not found');
+  
+    list.name = newName;
+    await list.save();
+    return list;
   } catch (err) {
     throw new Error(err.message);
   }

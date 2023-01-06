@@ -33,6 +33,16 @@ exports.editList = async (req, res) => {
   }
 };
 
+exports.changeNameList = async (req, res) => {
+  const listInfo = req.body;
+  try {
+    const editedList = await listService.editNameList(listInfo);
+    res.status(200).send(editedList);
+  } catch (err) {
+    res.status(404).send(err.message);
+  }
+}
+
 exports.deleteList = async (req, res) => {
   const id = req.params.id;
   try {
