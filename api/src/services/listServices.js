@@ -55,7 +55,7 @@ exports.postListDb = async (listInfo) => {
 
     const newList = await List.findOne({ where: {name: listName} });
     await newList.setUser(user);
-    return newList;
+    return 'List created succesfully!';
   } catch (err) {
     throw new Error(err.message);
   };
@@ -106,7 +106,7 @@ exports.editNameList = async (listInfo) => {
   
     list.name = newName;
     await list.save();
-    return list;
+    return 'List edited succesfully!';
   } catch (err) {
     throw new Error(err.message);
   }
