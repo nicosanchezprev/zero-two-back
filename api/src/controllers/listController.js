@@ -1,5 +1,15 @@
 const listService = require('../services/listServices')
 
+exports.getAllList = async (req, res) => {
+  const {userId} = req.query;
+  try {
+    const allLists = await listService.getAllListInfo(userId);
+    res.status(200).send(allLists);
+  } catch (err) {
+    res.status(404).send(err.message);
+  }
+}
+
 exports.getList= async (req, res) => {
   const { id } = req.params;
   try {
