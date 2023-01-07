@@ -57,7 +57,7 @@ exports.deleteList = async (req, res) => {
   const id = req.params.id;
   try {
     const response = await listService.destroyList(id);
-    res.status(200).send({message: response});
+    res.status(200).send(response);
   } catch (err) {
     res.status(404).send(err.message);
   }
