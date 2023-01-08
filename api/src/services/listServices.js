@@ -2,13 +2,17 @@ const { Anime, List, User } = require('../db.js');
 
 exports.getAllListInfo = async (userId) => {
   try {
-    const allListsAux = await List.findAll({ where: {userId}, include: [{
-      model: Anime,
-      attributes: ['id'],
-      through: {
-        attributes: []
-      }
-    }] });
+    const allListsAux = await List.findAll({ 
+      where: {userId}, 
+      include: [{
+        model: Anime,
+        attributes: ['id'],
+        through: {
+          attributes: []
+        }
+      }],
+      order: [['id', 'DESC']]
+    });
     if(!allListsAux.length) throw new Error('This user doesnt have any lists created');
     let allListsUser;
     allListsUser = await allListsAux.map((list) => {
