@@ -116,6 +116,22 @@ exports.editNameList = async (listInfo) => {
   }
 };
 
+exports.destroyAnimeInList = async (animeToDelete) => {
+  const animeId = animeToDelete.anime;
+  const listId = animeToDelete.list;
+  
+  try {
+    const anime = await Anime.findOne({ where: {id: animeId} });
+    const list = await List.findOne({ where: {id: listId} });
+
+    await list.removeAnime(anime);
+    return 'Anime deleted succesfully';
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(err.message);
+  }
+}
+
 exports.destroyList = async (id) => {
   try {
     const deletingList = await List.findOne({ where: {id: id} });
