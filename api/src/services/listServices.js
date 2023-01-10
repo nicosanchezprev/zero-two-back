@@ -29,17 +29,33 @@ exports.getAllListInfo = async (userId) => {
 exports.getListInfo = async (id) => {
   try {
     // Aca busco la lista con el id
-    const list = await List.findByPk(id, {
-      include: [{
-        model: Anime,
-        attributes: ['id', 'name', 'posterImage', 'showType'],
-        through: {
-          attributes: []
-        }
-      }]
-    });
-    if(!list) throw new Error('List not found');
-    return list;
+    if(id === "Favorites") {
+      const list = await List.findOne({
+        where: {name: 'Favorites'},
+        include: [{
+          model: Anime,
+          attributes: ['id', 'name', 'posterImage', 'showType'],
+          through: {
+            attributes: []
+          }
+        }]
+      });  
+      if(!list) throw new Error('List not found');
+      return list;
+    } else {
+      const list = await List.findByPk(id, {
+        include: [{
+          model: Anime,
+          attributes: ['id', 'name', 'posterImage', 'showType'],
+          through: {
+            attributes: []
+          }
+        }]
+      });
+      if(!list) throw new Error('List not found');
+      return list;
+    }
+    
   } catch (err) {
     throw new Error(err.message);
   };
@@ -51,6 +67,8 @@ exports.postListDb = async (listInfo) => {
   
   try {
     const user = await User.findOne({ where: {email: email} });
+    const listCheck = await List.findOne({ where: {name: listName} });
+    if(listCheck) throw new Error('There is already a list with that Name!');
     if(!user) throw new Error('The user does not exists');
     if(!listName) throw new Error('The list needs a name!');
     if(listName.length < 2) throw new Error('The list needs 2 or more characters!');
