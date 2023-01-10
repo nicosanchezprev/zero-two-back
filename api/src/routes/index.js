@@ -7,6 +7,7 @@ const reviewRouter = require('./reviewRouter.js');
 const userRouter = require('./userRouter.js');
 const adminRouter = require('./adminRouter.js');
 const listRouter = require('./listRouter.js');
+const likeRouter = require('./likesRouter.js')
 const router = Router();
 
 router.use('/animes', animeRouter);
@@ -16,5 +17,6 @@ router.use('/reviews', reviewRouter);
 router.use('/user', userRouter);
 router.use('/admin', adminRouter);
 router.use('/list', listRouter);
+router.use('/like', likeRouter)
   
 module.exports = router;

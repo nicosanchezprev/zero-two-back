@@ -47,3 +47,29 @@ exports.getReviewsByEpisode = async (req, res) => {
         res.status(404).send(err.message)
     }
 }
+
+exports.deleteComment = async (req, res) => {
+    let episodeId = req.params.episodeId;
+    let commentId = req.params.commentId;
+
+    try {
+        const commentDeleted = await reviewServices.deletePost(episodeId, commentId)
+        res.status(200).send(commentDeleted);
+    } catch (err) {
+        res.status(404).send(err.message)
+    }
+}
+
+exports.patchComment = async (req, res) => {
+    let episodeId = req.params.episodeId;
+    let commentId = req.params.commentId;
+    let content = req.body.content
+    console.log(req.body)
+    try {
+        const commentEdited = await reviewServices.editPost(episodeId, commentId, content)
+        res.status(200).send(commentEdited);
+    } catch (err) {
+        console.log(err.message)
+        res.status(404).send(err.message)
+    }
+}

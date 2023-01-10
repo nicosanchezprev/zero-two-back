@@ -35,6 +35,10 @@ module.exports = (sequelize) => {
     id_episode: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    parent_id: {
+      type:DataTypes.INTEGER,
+      defaultValue: null
     }
   },
   {
