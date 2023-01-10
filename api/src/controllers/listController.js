@@ -1,5 +1,15 @@
 const listService = require('../services/listServices')
 
+exports.getAllList = async (req, res) => {
+  const {userId} = req.query;
+  try {
+    const allLists = await listService.getAllListInfo(userId);
+    res.status(200).send(allLists);
+  } catch (err) {
+    res.status(404).send(err.message);
+  }
+}
+
 exports.getList= async (req, res) => {
   const { id } = req.params;
   try {
@@ -33,11 +43,31 @@ exports.editList = async (req, res) => {
   }
 };
 
+exports.changeNameList = async (req, res) => {
+  const listInfo = req.body;
+  try {
+    const editedList = await listService.editNameList(listInfo);
+    res.status(200).send(editedList);
+  } catch (err) {
+    res.status(404).send(err.message);
+  }
+}
+
+exports.deleteAnimeInList = async (req, res) => {
+  const animeToDelete = req.body;
+  try {
+    const response = await listService.destroyAnimeInList(animeToDelete);
+    res.status(200).send(response);
+  } catch (err) {
+    res.status(404).send(err.message);
+  }
+}
+
 exports.deleteList = async (req, res) => {
   const id = req.params.id;
   try {
     const response = await listService.destroyList(id);
-    res.status(200).send({message: response});
+    res.status(200).send(response);
   } catch (err) {
     res.status(404).send(err.message);
   }

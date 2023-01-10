@@ -1,5 +1,31 @@
 const { Anime, List, User } = require('../db.js');
 
+exports.getAllListInfo = async (userId) => {
+  try {
+    const allListsAux = await List.findAll({ 
+      where: {userId}, 
+      include: [{
+        model: Anime,
+        attributes: ['id'],
+        through: {
+          attributes: []
+        }
+      }],
+      order: [['id', 'DESC']]
+    });
+    if(!allListsAux.length) throw new Error('This user doesnt have any lists created');
+    let allListsUser;
+    allListsUser = await allListsAux.map((list) => {
+      list.dataValues.animes = list.animes.length;
+      return list;
+    })  
+
+    return allListsUser;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
 exports.getListInfo = async (id) => {
   try {
     // Aca busco la lista con el id
@@ -33,7 +59,7 @@ exports.postListDb = async (listInfo) => {
 
     const newList = await List.findOne({ where: {name: listName} });
     await newList.setUser(user);
-    return newList;
+    return 'List created succesfully!';
   } catch (err) {
     throw new Error(err.message);
   };
@@ -45,7 +71,7 @@ exports.addAnimeToList = async (listInfo) => {
 
   try {
     const anime = await Anime.findOne({ where: {id: animeId} });
-    const list = await  List.findOne({ where: {id: listId} });
+    const list = await List.findOne({ where: {id: listId} });
 
     if(!anime) {
       throw new Error('Anime not found');
@@ -73,6 +99,38 @@ exports.addAnimeToList = async (listInfo) => {
     throw new Error(err.message);
   }
 };
+
+exports.editNameList = async (listInfo) => {
+  const newName = listInfo.name;
+  const listId = listInfo.id;
+
+  try {
+    const list = await List.findOne({ where: {id: listId} });
+    if (!list) throw new Error('List not found');
+  
+    list.name = newName;
+    await list.save();
+    return 'List edited succesfully!';
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+exports.destroyAnimeInList = async (animeToDelete) => {
+  const animeId = animeToDelete.anime;
+  const listId = animeToDelete.list;
+  
+  try {
+    const anime = await Anime.findOne({ where: {id: animeId} });
+    const list = await List.findOne({ where: {id: listId} });
+
+    await list.removeAnime(anime);
+    return 'Anime deleted succesfully';
+  } catch (err) {
+    console.log(err.message);
+    throw new Error(err.message);
+  }
+}
 
 exports.destroyList = async (id) => {
   try {
