@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const generateToken = require('../utils/generateToken.js');
 const sendEmail  =require ('../utils/sendEmail.js');
 const comparePassword = require('../utils/comparePassword.js');
+const { Op } = require('sequelize');
 const dotenv = require('dotenv').config();
 
 exports.getUserInfoWithGoogle = async (email) => {
@@ -149,4 +150,26 @@ exports.deleteUser = async (email) => {
   } catch(err) {
     throw new Error(err.message);
   }
+}
+
+exports.searchuser = async (name) => {
+
+  if (!name) {
+    return [];
+  }
+  else {
+    let user = await User.findAll({where: {nickname: {[Op.like]: `%${name}%`}}});
+  
+    try {
+      if(!user) {
+        throw new Error('User could not be founded');
+      }
+       else {
+        return user
+      }
+    } catch(err) {
+      throw new Error(err.message);
+    }
+  }
+  
 }

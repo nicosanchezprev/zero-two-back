@@ -71,3 +71,13 @@ exports.deleteUser = async (req, res) => {
         res.status(404).send(err.message)
     }
 }
+
+exports.searchUsers  = async (req, res) => {
+    const name = req.query.name;
+    try {
+        const userSearch = await userServices.searchuser(name)
+        res.status(200).send(userSearch)
+    } catch (err) {
+        res.status(404).send(err.message)
+    }
+}
