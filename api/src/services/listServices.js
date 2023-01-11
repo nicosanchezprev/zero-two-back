@@ -13,7 +13,6 @@ exports.getAllListInfo = async (userId) => {
       }],
       order: [['id', 'DESC']]
     });
-    if(!allListsAux.length) throw new Error('This user doesnt have any lists created');
     let allListsUser;
     allListsUser = await allListsAux.map((list) => {
       list.dataValues.animes = list.animes.length;
@@ -69,7 +68,7 @@ exports.postListDb = async (listInfo) => {
     const user = await User.findOne({ where: {email: email} });
     const listCheck = await List.findOne({ where: {name: listName} });
     if(listCheck) throw new Error('There is already a list with that Name!');
-    if(!user) throw new Error('The user does not exists');
+    if(!user || user.id === null) throw new Error('The user does not exists');
     if(!listName) throw new Error('The list needs a name!');
     if(listName.length < 2) throw new Error('The list needs 2 or more characters!');
     delete listInfo.email;
