@@ -8,6 +8,7 @@ exports.adminAction = async (req, res) => {
       const bannedUser = await adminServices.setUserAction(actionBan);
       res.status(200).send(bannedUser);
   } catch (err) {
+      console.log(err.message)
       res.status(404).send(err.message);
   }
 }

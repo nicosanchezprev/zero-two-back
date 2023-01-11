@@ -12,4 +12,6 @@ userRouter.post('/register',userController.createUser)
 userRouter.delete('/:email', validateAccessToken, userController.deleteUser);
 userRouter.get('/verify/:email/:token', userController.verifyUser)
 
+userRouter.get('/search', userController.searchUsers)
+
 module.exports = userRouter;

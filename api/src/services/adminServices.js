@@ -12,13 +12,13 @@ exports.setUserAction = async (actionBan) => {
     
     if(checkAdmin && checkUser) {
       //Roles
-      if (action === "admin") checkUser.rol = "Admin";
-      if (action === "user") checkUser.rol = "User";
+      if (action === "Admin") checkUser.rol = "Admin";
+      if (action === "User") checkUser.rol = "User";
       //Permissions
-      if (action === "ban") checkUser.permissions = "Banned";
-      if (action === "edit") checkUser.permissions = "Edit";
-      if (action === "watch") checkUser.permissions = "Watch";
-      if (action === "all") checkUser.permissions = "All";
+      if (action === "Banned") checkUser.permissions = "Banned";
+      if (action === "Edit") checkUser.permissions = "Edit";
+      if (action === "Watch") checkUser.permissions = "Watch";
+      if (action === "All") checkUser.permissions = "All";
       checkUser.save();
       return checkUser;
     } else {
